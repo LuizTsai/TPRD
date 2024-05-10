@@ -1,0 +1,3 @@
+# TPRD
+
+Projeto referente a extração de dados de mercado de diversas instituições financeiras como BMMF, COMEX, CME, NYMEX, etc...
