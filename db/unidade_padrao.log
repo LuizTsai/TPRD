@@ -1,0 +1,19 @@
+--------------
+insert into dados.UnidadePadrao (unidade_id, tipo) values ( 1, 'M')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.UnidadePadrao (unidade_id, tipo) values ( 10, 'V')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.UnidadePadrao (unidade_id, tipo) values ( 17, 'E')
+--------------
+
+Query OK, 1 row affected (0.01 sec)
+
+Bye

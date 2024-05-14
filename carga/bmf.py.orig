@@ -1,0 +1,242 @@
+#!/usr/bin/python -u
+# -*- coding: utf8 -*-
+
+#
+# Copyright 2013 Leandro Dybal Bertoni - All Rights Reserved
+#
+
+
+import sys, re, string
+import db, conv, admin
+
+debug=0
+count_i=count_u=count_p=0
+data = None
+lin=0
+
+ignorar = [ "AUD", "BRI", "BSE", "CAD", "CHF", "CLP", "CNY", "CR1", "DAP", "DCO", "DDI", "DDM", "DI1", "DOL", "DR1", "EUR", "FRC", "FRO", "FRP", "GBP", "HSI", "IAP", "IGM", "IND", "IR1", "ISP", "JPY", "JSE", "KR1", "MIX", "MXN", "NZD", "OC1", "RSP", "TRY", "T10", "WDO", "WEU", "WIN", "ZAR" ]
+novos = []
+
+
+if len(sys.argv) < 2:
+	print "Uso:", sys.argv[0],"[-v] <arquivo a carregar>"
+	sys.exit()
+if sys.argv[1] == "-v":
+	debug = 1
+	nome_arq = sys.argv[2]
+elif sys.argv[1] == "-vv":
+	debug = 2
+        nome_arq = sys.argv[2]
+elif sys.argv[1] == "-vvv":
+	debug = 3
+        nome_arq = sys.argv[2]
+else: nome_arq = sys.argv[1]
+
+
+arquivo_log = admin.init("bmf")
+programa_id = db.obtem_id_programa(debug, "bmf")
+if not programa_id:
+        print "PROBLEMAS!!: programa bmf não encontrado na base de dados!"
+        # enviar email
+        admin.sair(debug, programa_id, nome_arq, arquivo_log, data, count_i, count_u, count_p, "PROBLEMAS!!: programa bmf não encontrado na base de dados!");
+
+
+
+print "Tratando arquivo",nome_arq
+try: 
+	f = open(nome_arq)
+except IOError, e:
+	print "Não foi possível abrir arquivo",nome_arq,"(",e,")"
+	admin.sair(debug, programa_id, nome_arq, arquivo_log, data, count_i, count_u, count_p, "Não foi possível abrir arquivo"+nome_arq+"("+e+")")
+
+
+def le_linha(arq):
+	global lin
+	lin = lin + 1
+	linha = re.sub(r'\n$', "", arq.readline())
+	if debug: print "("+str(lin)+"):", linha
+	return linha
+
+'''
+https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/commodities/
+
+BGI - https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/commodities/ficha-do-produto-8AE490CA6D41D4C7016D45F3CA183814.htm
+OZ1 - https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/commodities/ficha-do-produto-8AE490CA6D41D4C7016D45F3CB49391D.htm
+SOY - https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/commodities/ficha-do-produto-8AE490CA7D05CBEE017D4DC828377F6C.htm
+ICF - https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/commodities/ficha-do-produto-8AE490CA6D41D4C7016D45F3CA44383E.htm
+ETH - https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/commodities/ficha-do-produto-8AE490CA6D41D4C7016D45F3CAD938C4.htm
+CCM - https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/commodities/ficha-do-produto-8AE490CA6D41D4C7016D45F3CB0A38F0.htm
+
+BGI: Boi Gordo (Contrato = 330 Arrobas; Cotação = R$/Arroba)
+Mercado Futuro
+              Contratos     Negócios          Contratos                       Preço de      Preço      Preço       Preço      Último        Variação em            Última Oferta       Última Oferta
+Vencimento                                                    Volume                                                                 Ajuste
+             em Aberto     Realizados        Negociados                       Abertura     Mínimo     Máximo       Médio       Preço             Pontos               de Compra            de Venda
+F24                  41             8                18      1.306.800          220,00      220,00      220,00     220,00     220,00    233,10           0,00            220,00               223,85
+J24                    -                -                -              -              -          -           -          -          - 245,00            -8,40↓                 -             245,00
+K24                    1                1                1      77.534          234,95      234,95      234,95     234,95      234,95 239,80             0,00            230,00              234,95
+Q23                2.581           152              499      35.771.274          217,95     216,00      218,45      217,23     216,35   216,45          -0,30↓            216,05              216,50
+U23                1.797          200               499 34.693.032               210,50    208,00       212,90     210,68     208,90 208,65             -2,55↓            208,25             209,25
+V23               15.533         2.208             6.291 441.132.549            214,00      209,60      216,00     212,48      211,00 210,60            -3,50↓            210,70              210,95
+X23               1.994            139              349      25.253.019          219,20     216,00      222,30      219,26     216,00   216,55          -2,60↓            216,00              216,95
+Z23                1.317           121              357 26.262.836               222,75     218,85      224,50     222,92      219,35   220,15          -3,05↓            219,25             220,40
+'''
+
+line = le_linha(f)
+while line:	# loop de simbolos
+	comp_trans = conv.my_str(string.strip(line[6:9]))	# fixo em 001
+	tipo_reg = conv.my_str(string.strip(line[9:11]))	# fixo em 01 
+	data = conv.my_str(string.strip(line[11:15]+"-"+line[15:17]+"-"+line[17:19])) 
+	cod_merc = conv.my_str(string.strip(line[21:24])) 
+	mercado = conv.my_int(string.strip(line[24:25])) 
+	opcao = conv.my_str(string.strip(line[25:26]))	# C (compra), V (venda), * (futuro) 
+	serie = conv.my_str(string.strip(line[26:30])) 
+	hora_arq = conv.my_str(string.strip(line[30:36])) 
+	venc = conv.my_str(string.strip(line[36:40]+"-"+line[40:42]+"-"+line[42:44])) 
+	preco_exer = conv.my_str(string.strip(line[44:57])) 
+	tam_contr = conv.my_str(string.strip(line[57:70])) 
+	vol_real = conv.my_float(string.strip(line[70:83])) 
+	vol_dol = conv.my_float(string.strip(line[83:96])) 
+	open_int = conv.my_long(string.strip(line[96:104])) 
+	negocios = conv.my_int(string.strip(line[104:112])) 
+	vol_contratos = conv.my_long(string.strip(line[112:120])) 
+	abertura = conv.my_float(string.strip(line[148:157])) 
+	low = conv.my_float(string.strip(line[157:166])) 
+	high = conv.my_float(string.strip(line[166:175])) 
+	vwap = conv.my_float(string.strip(line[175:184])) 
+	last = conv.my_float(string.strip(line[189:198]))
+	fechamento = conv.my_float(string.strip(line[221:230]))
+	settle = conv.my_float(string.strip(line[230:244])) 
+	casas_dec = conv.my_int(string.strip(line[315:316])) 
+	casas_dec_set = conv.my_int(string.strip(line[316:317])) 
+
+	if comp_trans != "001" or tipo_reg != "01":
+		print "PROBLEMAS: Arquivo inválido, campos fixos (comnplemento_de_transação e tipo_registro) com valores diferentes do esperado"
+		admin.sair(debug, programa_id, nome_arq, arquivo_log, data, count_i, count_u, count_p, "PROBLEMAS: Arquivo inválido, campos fixos (comnplemento_de_transação e tipo_registro) com valores diferentes do esperado")
+
+	if mercado !=1 and mercado !=2:	
+		if debug: print "Mercado não é Disponível ou Futuro, ignorando"
+	elif opcao != "*":
+		if debug: print "Opção, ignorando"
+	else:
+		# corrigir valores pelo número de casas decimais
+		abertura = abertura / (10 ** casas_dec)
+		low = low / (10 ** casas_dec)
+		high = high / (10 ** casas_dec)
+		vwap = vwap / (10 ** casas_dec)
+		last = last / (10 ** casas_dec)
+		fechamento = fechamento / (10 ** casas_dec)
+		settle = settle / (10 ** casas_dec_set)
+		
+		if debug > 1:
+			print "\tdata:", data
+			print "\tcódigo mercadoria:", cod_merc
+			print "\tvencimento:", venc
+			print "\tvolume em reais:", vol_real
+			print "\tvolume em dolars:", vol_dol
+			print "\tcontratos em aberto:", open_int
+			print "\tnegócios:", negocios
+			print "\tvolume de contratos:", vol_contratos
+			print "\tabertura:", abertura
+			print "\tmínimo:", low
+			print "\tmáximo:", high
+			print "\tvwap", vwap
+			print "\túltimo:", last
+			print "\tfechamento(?):", fechamento
+			print "\tajuste (settle):", settle
+
+		if venc[0]=="0":
+			print "AVISO: vencimento zerado! - código mercadoria:",cod_merc
+			print line
+			print "\tdata:", data
+                        print "\tcódigo mercadoria:", cod_merc
+                        print "\tvencimento:", venc
+                        print "\tvolume em reais:", vol_real
+                        print "\tvolume em dolars:", vol_dol
+                        print "\tcontratos em aberto:", open_int
+                        print "\tnegócios:", negocios
+                        print "\tvolume de contratos:", vol_contratos
+                        print "\tabertura:", abertura
+                        print "\tmínimo:", low
+                        print "\tmáximo:", high
+                        print "\tvwap", vwap
+                        print "\túltimo:", last
+                        print "\tfechamento(?):", fechamento
+	                print "\tajuste (settle):", settle
+		else:
+			print "Código Mercadoria:",cod_merc,"Vencimento:", venc,"Settle:", settle,"Volume:", vol_contratos
+			# procurar família do símbolo
+			familia = db.obtem_familia_programa(debug, programa_id, cod_merc)
+			if not familia:
+				try:
+					i = ignorar.index(cod_merc)
+					print "...Símbolo", cod_merc, "não encontrado em FamiliaContratos, mas está na lista de símbolos a ignorar"
+				except ValueError, e:
+					try:
+						i = novos.index(cod_merc)
+					except ValueError, e:
+						novos.append(cod_merc)
+						print "AVISO: Símbolo", cod_merc, "não encontrado em FamiliaContratos, nem na lista de símbolos a ignorar"
+			else: 
+				print "...Mercadoria", cod_merc, "pertence à família", familia.id, familia.nome.encode('utf-8')
+				db.inserir_programa_familia(debug, programa_id, familia)
+				# procurar Ativo com o vencimento
+				ativo = db.obtem_ativo(debug, familia, venc[0:7])
+				if not ativo:
+					# ainda não há Ativo com o vencimento, criar!
+					print "...Vencimento", venc, "não encontrado, inserir Ativo"
+					data_vencimento = venc
+					ativo = db.inserir_ativo(debug, familia, venc[0:7], data_vencimento)
+					if not ativo:
+						print "!!!!!!PROBLEMAS ao criar ativo para vencimento",venc
+				if ativo: 
+					print "...Vencimento",venc,"Ativo", ativo.id
+					if ativo.moeda_cotacao == 1:
+						vol_financeiro = vol_real
+					else: vol_financeiro = vol_dol
+					# verificar se já há cotação do ativo para a data na base
+					cotacao = db.obtem_cotacao_ativo( debug, ativo, data)
+					if not cotacao:
+						# inserir cotação
+						cotacao = db.inserir_cotacao_ativo(debug, ativo, data, abertura, last, settle, vwap, high, low, negocios, vol_contratos, vol_financeiro, open_int)
+						if cotacao: print "......cotação inserida"
+						count_i += 1
+					else:	# já há cotação nesse dia
+						# verificar se mudou...
+						if (abertura>0 and cotacao.abertura != abertura) or (last>0 and cotacao.ultimo != last) or (settle>0 and cotacao.fechamento != settle) or (vwap>0 and cotacao.vwap != vwap) or (high>0 and cotacao.maximo != high) or (low>0 and cotacao.minimo != low) or (negocios>0 and cotacao.negocios != negocios) or (vol_contratos>0 and cotacao.volume_contratos != vol_contratos) or (vol_financeiro>0 and cotacao.volume_financeiro != vol_financeiro) or (open_int>0 and cotacao.contratos_aberto != open_int):
+							if abertura>0 and cotacao.abertura != abertura: print ".......mudou abertura",(cotacao.abertura,abertura)
+							if last>0 and cotacao.ultimo != last: print ".......mudou ultimo",(cotacao.ultimo,last)
+							if settle>0 and cotacao.fechamento != settle: print ".......mudou fechamento",(cotacao.fechamento,settle)
+							if vwap>0 and cotacao.vwap != vwap: print ".......mudou vwap",(cotacao.vwap,vwap)
+							if high>0 and cotacao.maximo != high: print ".......mudou maximo",(cotacao.maximo,high)
+							if low>0 and cotacao.minimo != low: print ".......mudou minimo",(cotacao.minimo,low)
+							if negocios>0 and cotacao.negocios != negocios: print ".......mudou negocios",(cotacao.negocios,negocios)
+							if vol_contratos>0 and cotacao.volume_contratos != vol_contratos: print ".......mudou volume_contratos",(cotacao.volume_contratos,vol_contratos)
+							if vol_financeiro>0 and cotacao.volume_financeiro != vol_financeiro: print ".......mudou volume_financeiro",(cotacao.volume_financeiro,vol_financeiro)
+							if open_int>0 and cotacao.contratos_aberto != open_int: print ".......mudou contratos_aberto",(cotacao.contratos_aberto,open_int)
+							# mudou, atualizar
+							cotacao.abertura = abertura
+							cotacao.ultimo = last
+							cotacao.fechamento = settle
+							cotacao.vwap = vwap
+							cotacao.maximo = high
+							cotacao.minimo = low
+							cotacao.negocios = negocios
+							cotacao.volume_contratos = vol_contratos
+							cotacao.volume_financeiro = vol_financeiro
+							cotacao.contratos_aberto = open_int
+							cotacao_nova = db.update_cotacao_ativo(debug, ativo, cotacao)
+							if cotacao_nova: print "......cotação atualizada"
+							count_u += 1
+						else: 
+							print "......cotação idêntica já existe na base, ignorando"
+							count_p += 1
+	line = le_linha(f)
+
+print "FIM"
+
+if len(novos)>0:
+        print "Símbolos novos detectados:", novos
+
+admin.sair(debug, programa_id, nome_arq, arquivo_log, data, count_i, count_u, count_p, None)
+

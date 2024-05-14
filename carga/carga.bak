@@ -1,0 +1,207 @@
+#!/bin/sh
+
+#
+# Copyright 2013 Leandro Dybal Bertoni - All Rights Reserved
+#
+
+
+
+arquiva() {
+	echo "arquivando $1 em $2"
+	if [ -f $2/$1 ]; then
+		ult=`ls -tr ${2}/${1}* | tail -n 1 2>/dev/null`
+		echo $ult
+		diff -q processando/$1 $ult
+		if [ $? -eq 0 ]; then
+			echo "arquivo $2/$ult idêntico a $1, ignorando"
+			rm processando/$1
+		else
+			ult_suf=`echo $ult | sed "s/$2\/$1\.*\([0-9]*\)/\1/"`
+			if [ -z "$ult_suf" ]; then
+				ult_suf=0
+			fi
+			suf=$(( $ult_suf + 1 ))
+			echo "já há arquivo $1 em $2, acresentando sufixo $suf"
+			mv processando/${1} ${2}/${1}.${suf}
+		fi
+	else
+		echo "movendo $1 para $2"
+		mv processando/$1 $2/
+	fi
+}
+
+#
+# carrega_arquivo <programa de carga> <arquivo a carregar>
+#
+# <programa de carga> : nome do programa de carga, sem extensão e diretórios
+# <arquivo a carregar> : nome do link simbólico no diretório corrente que aponta pro arquivo a cerregar
+# <pre-processamento> : especifica o pre-processamento de que o arquivo necessita 
+#
+# O diretório corrente deve ser a área de trabalho do programa de carga (/home/dybal/run/<programa de carga>
+#
+carrega_arquivo() {
+	prog=$1
+	i=$2
+	preproc=$3
+       	if [ -h "$i" ]; then # tem que ser link simbólico!
+		# obter nome do arquivo apontado pelo link simbólico
+        	arq=`ls -l $i | sed "s/.*-> //"`
+		if [ -n "$preproc" ]; then
+			echo "Há pre-processamento"
+			if [ "$preproc" = "PDF" ]; then
+               	        	echo "`date`: Processando arquivo $i ($arq)"
+				mv $i processando/
+				txt=`basename $arq | sed  "s/\.[Pp][Dd][Ff]/\.txt/"`
+				pdftotext -layout -nopgbrk processando/$i processando/$txt
+				cd processando
+				carrega $prog $txt
+				r=$?
+				rm $txt
+				cd ..
+				if [ $r -eq 0 ]; then
+					arquiva $i processado
+				else
+					arquiva $i erro
+				fi
+
+			elif [ "$preproc" = "XLS" ]; then
+               	        	echo "`date`: Processando arquivo $i ($arq)"
+				mv $i processando/
+				csv=`basename $arq | sed  "s/\.[Xx][Ll][Ss]/\.csv/"`
+				/usr/bin/xls2csv -q3 -d"utf-8" -f"%F" "processando/$i" > "processando/$csv" 2>"processando/$csv.err"
+				ret=$?
+				if [ $ret -ne 0 -o ! -s "processando/$csv" ]; then
+					echo "PROBLEMAS ao converter XLS para CVS"
+					mailx -s "PROBLEMAS ao converter XLS para CSV" carga <<FIM
+					Arquivo: $i -> $arq
+					xls2csv retornou $ret
+					`ls -lh processando/$i`
+				
+					stderr:
+					`cat processando/$csv.err`
+	
+					stdout:
+					`cat processando/$csv`
+FIM
+					arquiva $i erro
+					arquiva $csv.err erro
+					arquiva $csv erro
+				else
+					cd processando
+					carrega $prog $csv
+					r=$?
+					cd ..
+					if [ $r -eq 0 ]; then
+						arquiva $i processado
+						rm processando/$csv processando/$csv.err
+					else
+						arquiva $i erro
+						arquiva $csv.err erro
+						arquiva $csv erro
+					fi
+				fi
+
+			elif [ "$preproc" = "ZIP" ]; then
+				zip=`ls -l $i | sed "s/.*-> //"`
+				echo $zip
+				if [ -f "$zip" ] ; then
+					echo "`date`: Processando arquivo $i ($zip)"
+					mv $i processando/
+					cd processando
+					dir=`basename $zip`
+					mkdir $dir
+					unzip $zip -d $dir
+					for k in `ls $dir`; do
+						if [ -f "$dir/$k" ]; then
+							carrega $prog $dir/$k
+							r=$?
+						fi
+					done
+					rm -rf $dir
+					cd ..
+					if [ $r -eq 0 ]; then
+						arquiva $i processado
+					else
+						arquiva $i erro
+					fi
+				fi
+			fi
+		else
+       	        	if [ -f "$arq" ]; then # tem que ser arquivo 
+               	        	echo "`date`: Processando arquivo $i ($arq)"
+	                       	mv $i processando/
+				carrega $prog $arq
+				r=$?
+				echo "Programa retornou $r"	
+				if [ $r -eq 0 ]; then
+					arquiva $i processado
+				else
+					arquiva $i erro
+				fi
+			fi		
+       	        fi
+        fi
+	sleep 2	
+}
+
+carrega() {
+	prog=$1
+	arq=$2
+	temp=`mktemp /tmp/${prog}_XXX`
+       	if [ -z "$temp" ]; then
+        	temp="/tmp/${prog}_temp"
+       	fi
+	echo $temp
+        $bin_dir/${prog}.py -vvv "$arq" 2>$temp.err 1>$temp.tmp
+        ret=$?
+        echo "programa de carga ${prog} retornou $ret"
+       	arq_log=`cat $temp.tmp`
+        cat $temp.err >> $arq_log
+        if [ $ret -gt 0 ]; then
+        	echo "`date`: Erro ao processar arquivo $i ($arq), log em $arq_log"
+		echo "`date`: Arquivo $i ($arq)\nLog em $arq_log\n\n" > $temp.txt
+		head -n 100 $arq_log >> $temp.txt
+		echo "\n;;;\n" >> $temp.txt
+		tail -n 50 $arq_log >> $temp.txt
+		echo "" | mail -s "${prog}: erro ao processar arquivo $i" -a $temp.txt  -r "dybal@tprd.com.br" carga
+		rm ${temp}*
+		return 1
+       	else
+		erro=`grep PROBLEMA $arq_log`
+		if [ -n "$erro" ]; then
+			echo "`date`: Encontrada mensagem de erro no log ($arq_log) da carga do arquivo $i:"
+			echo "\t$erro"
+			tail -n 6 $arq_log
+			echo "`date`: Arquivo $i ($arq)\nLog em ${arq_log}\n${erro}\n\n" > $temp.txt
+			head -n 100 $arq_log >> $temp.txt
+			echo "\n;;;\n" >> $temp.txt
+			tail -n 50 $arq_log >> $temp.txt
+			echo "" | mail -s "${prog}: encontrada msg erro ao processar arquivo $i" -a $temp.txt  -r "dybal@tprd.com.br" carga
+			rm ${temp}*
+			return 1
+		else
+			erro=`grep AVISO $arq_log`
+			tail -n 6 $arq_log
+	        	echo "`date`: Arquivo $i processado, log em $arq_log"
+			if [ -n "$erro" ]; then
+				echo "Encontrado AVISO no log:\n$erro"
+			fi
+			echo "`date`: Arquivo $i ($arq)\nLog em $arq_log\n\n" > $temp.txt
+			if [ -n "$erro" ]; then
+				echo "Encontrado AVISO no log:\n$erro" >> $temp.txt
+			fi
+			tail -n 6 $arq_log | head -n 4 >> $temp.txt
+			echo "==========================================" >> $temp.txt 
+			head -n 100 $arq_log >> $temp.txt
+			echo "\n;;;\n" >> $temp.txt
+			tail -n 50 $arq_log >> $temp.txt
+			if [ -n "$erro" ]; then
+				echo "" | mail -s "${prog}: arquivo $i carregado, mas com warnings" -a $temp.txt  -r "dybal@tprd.com.br" carga
+			else
+				echo "" | mail -s "${prog}: arquivo $i carregado" -a $temp.txt -r "dybal@tprd.com.br" carga
+			fi
+			rm ${temp}*
+			return 0
+		fi
+        fi
+}

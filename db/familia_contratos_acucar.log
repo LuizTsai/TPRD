@@ -1,0 +1,141 @@
+--------------
+insert into dados.FamiliaContratos (subbolsa_id, tipo_id, nome, nome_res, fisico, cod_arq, 
+	unidade_cotacao, moeda_cotacao, unidade_contrato_principal, unidade_contrato_secundaria, qtdade_contrato_principal, tick_size, delta_venc_m, delta_venc_d, tipo_delta, ajuste_fds, URL) 
+	values ( 3, 1, "NYMEX No. 11 Sugar Futures", "No. 11 Sugar Futures", 0, "YO", 3, 2, 3, NULL, 112000, 0.0001, 0, -2, 'U', -1,  "http://www.cmegroup.com/trading/agricultural/softs/sugar-no11_contract_specifications.html")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.CategoriasFamiliaContratos (familia_contratos_id, categoria_id) values (LAST_INSERT_ID(), 3)
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.FamiliaContratos (subbolsa_id, tipo_id, nome, nome_res, fisico, cod_arq, 
+	unidade_cotacao, moeda_cotacao, unidade_contrato_principal, unidade_contrato_secundaria, qtdade_contrato_principal, tick_size, delta_venc_m, delta_venc_d, tipo_delta, ajuste_fds, URL) 
+	values ( 5, 1, "Sugar No. 11 Futures", "Sugar No. 11 Futures", 1, "SB", 3, 3, 3, NULL, 112000, 0.01, 0, -1, 'U', -1,  "https://www.theice.com/productguide/ProductSpec.shtml?specId=23")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.CategoriasFamiliaContratos (familia_contratos_id, categoria_id) values (LAST_INSERT_ID(), 3)
+--------------
+
+Query OK, 1 row affected (0.01 sec)
+
+--------------
+insert into dados.FamiliaContratos (subbolsa_id, tipo_id, nome, nome_res, fisico, cod_arq, 
+	unidade_cotacao, moeda_cotacao, unidade_contrato_principal, unidade_contrato_secundaria, qtdade_contrato_principal, tick_size, delta_venc_m, delta_venc_d, tipo_delta, ajuste_fds, URL) 
+	values ( 5, 1, "Sugar No. 16 Futures", "Sugar No. 16 Futures", 1, "SF", 3, 3, 3, NULL, 112000, 0.01, -1, 7, 'C', 1,  "https://www.theice.com/productguide/ProductSpec.shtml?specId=914")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.CategoriasFamiliaContratos (familia_contratos_id, categoria_id) values (LAST_INSERT_ID(), 3)
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.FamiliaContratos (subbolsa_id, tipo_id, nome, nome_res, fisico, cod_arq, 
+	unidade_cotacao, moeda_cotacao, unidade_contrato_principal, unidade_contrato_secundaria, qtdade_contrato_principal, tick_size, delta_venc_m, delta_venc_d, tipo_delta, ajuste_fds, URL) 
+	values ( 9, 1, "Açúcar Cristal com Liquidação Financeira", "Açúcar Cristal Financeiro", 0, "ACF", 21, 1, 21, NULL, 508, 0.01, 0, 14, 'C', 1, "http://www.bmfbovespa.com.br/en_us/products/listed-equities-and-derivatives/commodities/cash-settled-crystal-sugar-futures.htm")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.CategoriasFamiliaContratos (familia_contratos_id, categoria_id) values (LAST_INSERT_ID(), 3)
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.FamiliaContratos (subbolsa_id, tipo_id, nome, nome_res, fisico, cod_arq, 
+	unidade_cotacao, moeda_cotacao, unidade_contrato_principal, unidade_contrato_secundaria, qtdade_contrato_principal, tick_size, delta_venc_m, delta_venc_d, tipo_delta, ajuste_fds, URL) 
+	values ( 11, 1, "White Sugar Futures", "White Sugar Futures", 1, "W", 5, 2, 5, NULL, 50, 0.1, 0, -16, 'C', -1,  "https://www.theice.com/products/37089080/White-Sugar-Futures")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.CategoriasFamiliaContratos (familia_contratos_id, categoria_id) values (LAST_INSERT_ID(), 3)
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.FamiliaContratos (subbolsa_id, tipo_id, nome, nome_res, fisico, cod_arq, 
+	unidade_cotacao, moeda_cotacao, unidade_contrato_principal, unidade_contrato_secundaria, qtdade_contrato_principal, tick_size, delta_venc_m, delta_venc_d, tipo_delta, ajuste_fds, URL) 
+	values ( 14, 1, "Raw Sugar", "Raw Sugar", 1, "211", 5, 5, 5, NULL, 50, 10, -1, -1, 'U', -1,  "http://www.tocom.or.jp/guide/youkou/raw_sugar/index.html")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.CategoriasFamiliaContratos (familia_contratos_id, categoria_id) values (LAST_INSERT_ID(), 3)
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.FamiliaContratos (subbolsa_id, tipo_id, nome, nome_res, fisico, cod_arq, 
+	unidade_cotacao, moeda_cotacao, unidade_contrato_principal, unidade_contrato_secundaria, qtdade_contrato_principal, tick_size, delta_venc_m, delta_venc_d, tipo_delta, ajuste_fds, URL) 
+	values ( 18, 1, "Sugar S", "Sugar S", 1, "SUGARS", 19, 7, 5, NULL, 10, 1, 0, 19, 'C', -1, "http://www.ncdex.com/GlobalSearch/Search.aspx?SearchText=SUGARS&SearchTitle=SUGAR%20S")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.CategoriasFamiliaContratos (familia_contratos_id, categoria_id) values (LAST_INSERT_ID(), 3)
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.FamiliaContratos (subbolsa_id, tipo_id, nome, nome_res, fisico, cod_arq, 
+	unidade_cotacao, moeda_cotacao, unidade_contrato_principal, unidade_contrato_secundaria, qtdade_contrato_principal, tick_size, delta_venc_m, delta_venc_d, tipo_delta, ajuste_fds, URL) 
+	values ( 18, 1, "Sugar M", "Sugar M", 1, "SUGARM200", 19, 7, 5, NULL, 10, 1, 0, 19, 'C', -1, "http://www.ncdex.com/GlobalSearch/Search.aspx?SearchText=SUGARM&SearchTitle=SUGAR%20M")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.CategoriasFamiliaContratos (familia_contratos_id, categoria_id) values (LAST_INSERT_ID(), 3)
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.FamiliaContratos (subbolsa_id, tipo_id, nome, nome_res, fisico, cod_arq, 
+	unidade_cotacao, moeda_cotacao, unidade_contrato_principal, unidade_contrato_secundaria, qtdade_contrato_principal, tick_size, delta_venc_m, delta_venc_d, tipo_delta, ajuste_fds, URL) 
+	values ( 18, 1, "Sugar M Grade", "Sugar M Grade", 1, "SUGARM", 19, 7, 5, NULL, 10, 1, 0, 19, 'C', -1, "http://www.ncdex.com/GlobalSearch/Search.aspx?SearchText=SUGARM&SearchTitle=SUGAR%20M")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.CategoriasFamiliaContratos (familia_contratos_id, categoria_id) values (LAST_INSERT_ID(), 3)
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.FamiliaContratos (subbolsa_id, tipo_id, nome, nome_res, fisico, cod_arq, 
+	unidade_cotacao, moeda_cotacao, unidade_contrato_principal, unidade_contrato_secundaria, qtdade_contrato_principal, tick_size, delta_venc_m, delta_venc_d, tipo_delta, ajuste_fds, URL) 
+	values ( 18, 1, "Gur", "Gur", 1, "GURCHMUZR", 27, 7, 5, NULL, 10, 0.5, 0, 19, 'C', -1, "http://www.ncdex.com/GlobalSearch/Search.aspx?SearchText=GURCHMUZR&SearchTitle=GUR")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.CategoriasFamiliaContratos (familia_contratos_id, categoria_id) values (LAST_INSERT_ID(), 3)
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+Bye

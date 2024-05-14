@@ -1,0 +1,151 @@
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values (  1, 1, "CBOT", "Chicago Board of Trade", "EUA", "United States")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values (  2, 2, "CME", "Chicago Mercantile Exchange", "EUA", "United States")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values (  3, 3, "NYMEX", "New York Mercantile Exchange", "EUA", "United States")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values (  4, 4, "COMEX", "Commodity Exchange", "EUA", "United States")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values (  5, 5, "ICE-US", "Intercontinental Exchange US", "EUA", "United States")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values (  6, 5, "ICE-EUR", "Intercontinental Exchange Europe", "Europa", "Europe")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values (  7, 5, "ICE-CAN", "Intercontinental Exchange Canada", "Canadá", "Canada")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values (  8, 5, "ICE-OTC", "Intercontinental Exchange OTC", "EUA", "United States")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values (  9, 6, "BMF", "BM&F", "Brasil", "Brazil")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 11, 5, "ICE-EUR,London", "Intercontinental Exchange Europe, London", "Reino UNido", "United Kingdom")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 12, 7, "EURONEXT,Paris", "Euronext, Paris Market", "França", "France")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 13, 8, "LME", "London Metal Exchange", "Reino UNido", "United Kingdom")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 14, 9, "TOCOM", "Tokyo Commodity Exchange", "Japão", "Japan")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 15, 10, "SICOM", "Singapore Commodity Exchange", "Singapura", "Singapore")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 16, 11, "HKE", "Hong Kong Exchange", "China", "China")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 17, 12, "MCX", "Multi Commodity Exchange of India", "Índia", "India")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 18, 13, "NCDEX", "National Commodity & Derivatives Exchange", "Índia", "India")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 19, 14, "AFET", "Agricultural Futures Exchange of Thailand", "Tailândia", "Thailand")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 20, 15, "ASX", "Australian Securities Exchange", "Austrália", "Australia")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 21, 16, "SAFEX", "SAFEX Agricultural Derivatives", "África do Sul", "South Africa")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 22, 17, "KRX", "Korea Exchange", "Coréia do Sul", "South Korea")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 23, 18, "CBMX", "China Beijing International Mining Exchange", "China", "China")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 24, 19, "LBMA", "London Bullion Market Association", "Reino UNido", "United Kingdom")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 26, 21, "MGEX", "Minneapolis Grain Exchange", "EUA", "United States")
+--------------
+
+Query OK, 1 row affected (0.01 sec)
+
+--------------
+insert into dados.SubBolsa (idSubBolsa, bolsa_id, mnemonico, nome, pais, country) values ( 27, 5, "ICE-EUR,S2F", "Intercontinental Exchange Europe, S2F", "Europa", "Europe")
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+Bye

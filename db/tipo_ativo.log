@@ -1,0 +1,7 @@
+--------------
+insert into dados.TipoAtivo (idTipoAtivo, nome) values ( 1, "Futuro" )
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+Bye

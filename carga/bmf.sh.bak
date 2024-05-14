@@ -1,0 +1,47 @@
+#!/bin/sh
+
+#
+# Copyright 2013 Leandro Dybal Bertoni - All Rights Reserved
+#
+
+
+run_dir="/home/dybal/run/bmf"
+bin_dir="/home/dybal/carga"
+. $bin_dir/carga
+
+
+descompacta() {
+	if [ -h "$1" ]; then
+		zip=`ls -l $i | sed "s/.*-> //"`
+		if [ -f "$zip" ] ; then
+			echo "`date`: Processando arquivo $i ($zip)"
+			mv $1 processando/
+			cd processando
+			dir=`basename $zip`
+			mkdir $dir
+			unzip $zip -d $dir
+			carrega "bmf" $dir/BD_Final.txt
+			r=$?
+			 rm -rf $dir
+			cd ..
+			if [ $r -eq 0 ]; then
+				mv processando/$1 processado/
+			else
+				mv processando/$1 erro/ 
+			fi
+			sleep 2
+		fi
+	fi
+}
+
+
+cd $run_dir
+for i in `ls`; do
+	if [ -f $i ]; then
+		echo "============================================================="
+		carrega_arquivo "bmf" "$i" "ZIP"
+#        descompacta "$i"
+	        echo ""
+	fi
+done
+
