@@ -2,3 +2,13 @@
 .idea
 target
 log
+mysql -h localhost -p 3306 -u root dados
+
+
+select ativo_id as ID_contract, data as date, abertura as opening_price, fechamento as closing_price,
+vwap, ultimo as last_price, maximo as max_price, minimo as min_price, negocios as trades,
+volume_contratos as volume_contracts, volume_financeiro as volume_financial, contratos_aberto as open_interest,
+compra as bestbuying, venda as bestselling
+from CotacaoAtivo;
+
+select count(*) from CotacaoAtivo;
