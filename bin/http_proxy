@@ -1,0 +1,76 @@
+#
+# Copyright 2013 Leandro Dybal Bertoni - All Rights Reserved
+#
+
+#declare -a HTTP_PROXY
+
+home=/devel/diego/TPRD
+
+# Carregar lista de proxies
+n=0
+for h in `cat ${home}/bin/lista_http_proxy | sed "s/ \+[0-9]*//"`; do
+	HTTP_PROXY[$n]="$h"
+	n=$(($n + 1))
+done
+
+if [ $n -lt 5 ]; then
+	echo "" | mail -s "PROBLEMAS: lista de proxies muito pequena ($n proxies)" carga <<FIM
+	`cat ${home}/bin/lista_http_proxy`
+FIM
+else
+	echo "$n Proxies listados"
+fi
+
+obtem_proxy() {
+	echo "Obtendo novo proxy"
+	httpproxy=""
+#	ret_hp=1
+#        tmp_file=`mktemp /tmp/http_proxy.XXXX`
+#	echo $tmp_file
+#	while [ $ret_hp -ne 0 ]; do
+#		if [ -n "$httpproxy" ]; then
+#			echo "PROBLEMAS com proxy $httpproxy" 1>&2
+#			rm $tmp_file
+#			remove_proxy "$httpproxy"
+#		fi	
+#		RANDOM=`date +%N`
+#		r=$RANDOM
+#		i=$(( $r % $n ))
+#		httpproxy=${HTTP_PROXY[$i]}
+#		http_proxy=$httpproxy
+#		wget -4 --no-dns-cache --tries=5 --timeout=20 www.microsoft.com -O $tmp_file > /dev/null 2>&1
+#		ret_hp=$?
+#	done
+#
+#	rm $tmp_file
+	export http_proxy="$httpproxy"
+	echo "sorteou $http_proxy, proxy=$http_proxy" 1>&2
+}
+
+remove_proxy() {
+	if [ -n "$1" ]; then
+		tmp_file=`mktemp /tmp/http_proxy.XXXX`
+		echo $tmp_file
+		cat ${home}/bin/lista_http_proxy | grep -v "$1" > $tmp_file
+		num=`cat ${home}/bin/lista_http_proxy | grep "$1" | sed "s/[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\:[0-9]\+//"`
+		if [ -z "$num" ]; then num="0"
+		fi
+		num=$[$num + 1]
+		echo "... contador de problemas com o proxy $num"
+		if [ $num -lt 500 ]; then
+			echo "$1 $num" >> $tmp_file
+		else
+			echo "Removendo proxy $1"
+		fi
+		if [ -s "$tmp_file" ]; then
+			mv $tmp_file ${home}/bin/lista_http_proxy
+		else
+			rm $tmp_file
+		fi
+	fi
+}
+
+obtem_proxy
+#export http_proxy="91.219.238.77:8080"
+#export http_proxy="14.17.29.112:80"
+

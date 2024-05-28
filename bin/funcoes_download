@@ -1,0 +1,157 @@
+#!/bin/sh
+
+#
+# Copyright 2013 Leandro Dybal Bertoni - All Rights Reserved
+#
+
+home=/devel/diego/TPRD
+
+download=` date "+%Y%m%d%H%M"`
+echo "funcoes_download importado"
+
+baixa_debug () {
+	ret_b=1
+	tries=0
+	while [ $tries -ne 1 -a $ret_b -ne 0 ]; do
+		wget -v -d --tries=5 --progress=dot:mega --waitretry=5 --random-wait --retry-connrefused -U "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:20.0) Gecko/20100101 Firefox/20.0"  $4 "$1" -O "tudo/${2}_${data}_${download}.${3}" 1>&2
+		ret_b=$?
+		if [ $ret_b -ne 0 -o ! -f "tudo/${2}_${data}_${download}.${3}" ]; then
+			echo "`date`: wget não conseguiu baixar, mudando de proxy" 1>&2
+			echo "" 1>&2
+			remove_proxy $http_proxy
+			tries=$(($tries+1))	
+			obtem_proxy
+			if [ $ret_b -eq 0 ]; then
+				ret_b=1
+			fi
+		else
+			erro=`grep "The online users' count exceeds the license's permission. You need to purchase or upgrade your license." tudo/${2}_${data}_${download}.${3}`
+			if [ -n "$erro" ]; then
+				echo "Arquivo baixado (tudo/${2}_${data}_${download}.${3}) tem mensagem de erro de excesso de usuários... descartando!"
+				mv tudo/${2}_${data}_${download}.${3} /tmp
+				ret_b=1
+			fi
+		fi
+	done
+	if [ $ret_b -ne 0 ]; then
+		echo "`date`: wget retornou problemas ($ret_b)" 1>&2
+		rm "tudo/${2}_${data}_${download}.${3}"
+		return $ret_b 
+	fi
+	return 0
+}
+
+
+
+percent_encode() {
+	python -c "import urllib, sys, re; sys.stdout.write(re.sub(r'\/', \"%2F\", urllib.quote(sys.stdin.readline())))" 
+}
+
+
+
+
+
+# $1: URL
+# $2: prefixo do nome do arquivo após baixar
+# $3: terminação do arquivo após baixar
+# $4: parâmetros extras para o wget
+baixa () {
+	tries=0
+	ret_b=1
+	while [ $tries -ne 5 -a $ret_b -ne 0 ]; do
+		wget --tries=5 --no-check-certificate --progress=dot:mega --waitretry=5 --random-wait --retry-connrefused -U "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:20.0) Gecko/20100101 Firefox/20.0"  $4 "$1" -O "tudo/${2}_${data}_${download}.${3}" 1>&2
+		ret_b=$?
+		if [ $ret_b -ne 0 -o ! -f "tudo/${2}_${data}_${download}.${3}" ]; then
+			echo "`date`: wget não conseguiu baixar, mudando de proxy" 1>&2
+			echo "" 1>&2
+	#		cat ${home}/bin
+			tries=$(($tries+1))	
+			obtem_proxy
+			if [ $ret_b -eq 0 ]; then
+				ret_b=1
+			fi
+		fi
+		if [ $ret_b -eq 0 ]; then
+			erro=`grep "The online users' count exceeds the license's permission. You need to purchase or upgrade your license." tudo/${2}_${data}_${download}.${3}`
+			if [ -n "$erro" ]; then
+				echo "Arquivo baixado (tudo/${2}_${data}_${download}.${3}) tem mensagem de erro de excesso de usuários... descartando!"
+				mv tudo/${2}_${data}_${download}.${3} /tmp
+				ret_b=1
+			fi
+		fi
+	done
+	if [ $ret_b -ne 0 ]; then
+		echo "`date`: wget retornou problemas ($ret_b)" 1>&2
+		rm "tudo/${2}_${data}_${download}.${3}"
+		return $ret_b 
+	fi
+	return 0
+}
+
+# $1: prefixo do nome do arquivo
+# $2 terminação do arquivo
+linka_se_novo () {
+	if [ -f "tudo/${1}_${data}_${download}.${2}" -a -s "tudo/${1}_${data}_${download}.${2}" ]; then
+		if [ -f "${1}_${data}.${2}" ]; then
+			diff -wB "${1}_${data}.${2}" "tudo/${1}_${data}_${download}.${2}" >  /dev/null
+			if [ $? -ne 0 ]; then
+				echo "`date`: Arquivo $1 do dia $data diferente do baixado anteriormente, mantendo!" 1>&2
+				rm "${1}_${data}.${2}"
+				ln -s "$data_dir/tudo/${1}_${data}_${download}.${2}" "${1}_${data}.${2}"
+				if [ -n "$run_dir" ]; then
+					echo "Criando link em $run_dir"
+					ln -sf $data_dir/tudo/${1}_${data}_${download}.${2} $run_dir/${1}_${data}.${2}
+				fi
+			else
+				echo "`date`: Arquivo $1 do dia $data idêntico ao baixado anteriormente, removendo..." 1>&2
+				rm "tudo/${1}_${data}_${download}.${2}"
+				return 2
+			fi
+		else
+			echo "`date`: Arquivo $1 do dia $data baixado pela primeira vez, mantendo..." 1>&2
+			ln -s "$data_dir/tudo/${1}_${data}_${download}.${2}" "${1}_${data}.${2}"
+			if [ -n "$run_dir" ]; then
+				echo "Criando link em $run_dir"
+				ln -s $data_dir/tudo/${1}_${data}_${download}.${2} $run_dir/${1}_${data}.${2}
+			fi
+		fi
+	else
+		echo "`date`: arquivo obtido está zerado, removendo" 1>&2
+		rm "tudo/${1}_${data}_${download}.${2}"
+		return 1
+	fi
+	return 0
+}
+
+
+# $1: URL
+# $2: prefixo do nome do arquivo após baixar
+# $3: terminação do arquivo após baixar
+# $4: parâmetros extras para o wget
+baixa_arquivo () {
+	baixa "$1" "$2" "$3" "$4"
+	ret=$?
+	if [ $ret -ne 0 ]; then
+		return 1 
+	else
+		linka_se_novo "$2" "$3"
+		ret=$?
+		if [ $ret -ne 0 ]; then
+			return $ret
+		fi
+	fi
+	echo "tudo/${2}_${data}_${download}.${3}"
+	return 0
+}
+
+delay() {
+	if [ -z "$1" ]; then
+		i=30
+	else
+		i=$1
+	fi
+	echo "maximo delay de $i"
+	interval=$(($RANDOM % $i))
+	echo "`date`: Sleeping $interval seconds"
+	sleep $interval
+}

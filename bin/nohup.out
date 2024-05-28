@@ -1,0 +1,44 @@
+rm: cannot remove 'bvd_*': No such file or directory
+bvd_202401301123
+Category_contract_set.csv
+Category.csv
+Contract.csv
+Contract_set.csv
+Currency.csv
+Exchange.csv
+Quotecontract.csv
+Sub_exchange.csv
+Type_contract.csv
+Unit.csv
+bvd_202402151313
+Category_contract_set.csv
+Category.csv
+Contract.csv
+Contract_set.csv
+Currency.csv
+Exchange.csv
+Quotecontract.csv
+Sub_exchange.csv
+Type_contract.csv
+Unit.csv
+rm: cannot remove 'bvd_*': No such file or directory
+mkdir: cannot create directory ‘bvd_202404192007’: No space left on device
+bvd_202404192007
+./exporta_bvd.sh: line 8: bvd_202404192007/Exchange.txt: No such file or directory
+PROBLEMAS: arquivo bvd_202404192007/Exchange.txt não gerado
+rm: cannot remove 'bvd_*': No such file or directory
+mkdir: cannot create directory ‘bvd_202404192007’: No space left on device
+bvd_202404192007
+./exporta_bvd.sh: line 8: bvd_202404192007/Exchange.txt: No such file or directory
+PROBLEMAS: arquivo bvd_202404192007/Exchange.txt não gerado
+bvd_202404192010
+Category_contract_set.csv
+Category.csv
+Contract.csv
+Contract_set.csv
+Currency.csv
+Exchange.csv
+Quotecontract.csv
+Sub_exchange.csv
+Type_contract.csv
+Unit.csv
